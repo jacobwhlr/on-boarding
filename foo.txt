@@ -1,0 +1,38 @@
+Jacob created this config
+Customer name is: Delta
+Program name is: NEMS
+ER number is: ER123456
+SG service is: FTIH-SG-654321
+The TSB number is: 2021020100001
+
+
+End User Crypto IP is 25.25.25.25
+FTI Crypto IP is 10.10.10.10
+End User Client IP is 5.5.5.5
+End User Client IP is 5.5.5.6
+End DST Client IP is 7.7.7.7
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+Below is the commands that you can copy and paste into the ASA
+
+access-list bob extended permit ip host 5.5.5.5 host 7.7.7.7
+access-list bob extended permit ip host 5.5.5.6 host 7.7.7.7
+
+crypto map internet1 123 match address bob
+crypto map internet1 123 set pfs group21
+crypto map internet1 123 set peer 25.25.25.25
+crypto map internet1 123 set ikev2 ipsec-proposal VPN-NEW VPN-NEW-BACKUP
+crypto map internet1 123 set security-association lifetime seconds 28800
+
+tunnel-group 25.25.25.25 type ipsec-l2l
+tunnel-group 25.25.25.25 ipsec-attributes
+   ikev2 remote-authentication pre-shared-key fti
+   ikev2 local-authentication pre-shared-key fti
+
+route internet 25.25.25.25 255.255.255.255 11.11.11.11
+route internet 5.5.5.5 255.255.255.255 11.11.11.11
+route internet 5.5.5.6 255.255.255.255 11.11.11.11
+
+
+object-group network NEMS-Client
+   network-object object 5.5.5.5
+   network-object object 5.5.5.6
