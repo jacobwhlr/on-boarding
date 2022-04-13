@@ -1,12 +1,25 @@
 from tkinter import *
 from tkinter import ttk
+import ipaddress
 
-
+# Create the window
 top_level_window = Tk()
-top_level_window.geometry("400x250")
+top_level_window.geometry("600x350")
 top_level_window.resizable(False, False)
-top_level_window.title("Welcome to the database program")
+top_level_window.title("Welcome to the on-boarding program")
 row_level = 0
+
+# Create the scroll bar
+main_frame = Frame(top_level_window)
+main_frame.pack(fill=BOTH, expand=1)
+my_canvas = Canvas(main_frame)
+my_canvas.pack(side=LEFT, fill=BOTH, expand=1)
+my_scrollbar = ttk.Scrollbar(main_frame, orient=VERTICAL, command=my_canvas.yview)
+my_scrollbar.pack(side=RIGHT, fill=Y)
+my_canvas.configure(yscrollcommand=my_scrollbar.set)
+my_canvas.bind('<Configure>', lambda e: my_canvas.configure(scrollregion=my_canvas.bbox("all")))
+second_frame = Frame(my_canvas)
+my_canvas.create_window((0, 0), window=second_frame, anchor="nw")
 
 
 """
@@ -49,26 +62,51 @@ about_program_frame = Frame(top_level_window)
 
 # Get basic info
 # get user who is building this flow out
-get_user_name_label = Label(top_level_window, text="What is your name: ")
-get_user_name_label.grid(row=row_level, column=0)
-get_user_name_entry = Entry(top_level_window)
-get_user_name_entry.grid(row=row_level, column=1)
+get_user_name_label = Label(second_frame, text="What is your name: ")
+get_user_name_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
+get_user_name_entry = Entry(second_frame)
+get_user_name_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+row_level += 1
+
+# get Customer Name
+get_customer_name_label = Label(second_frame, text="What is the customer name: ")
+get_customer_name_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
+get_customer_name_entry = Entry(second_frame)
+get_customer_name_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+row_level += 1
+
+# get Program Name
+get_program_name_label = Label(second_frame, text="What is the program name: ")
+get_program_name_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
+get_program_name_entry = Entry(second_frame)
+get_program_name_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+row_level += 1
+
+# Get \er number
+get_er_number_label = Label(second_frame, text="What is the ER number: ")
+get_er_number_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
+get_er_number_entry = Entry(second_frame)
+get_er_number_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+row_level += 1
+
+# Get sg number
+get_sg_service_label = Label(second_frame, text="What is the SG Service: ")
+get_sg_service_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
+get_sg_service_entry = Entry(second_frame)
+get_sg_service_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+row_level += 1
+
+# get TSB Number
+get_ticket_number_label = Label(second_frame, text="What is the TSB number: ")
+get_ticket_number_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
+get_ticket_number_entry = Entry(second_frame)
+get_ticket_number_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
 row_level += 1
 
 
-# get Customer Name
-#getCustomerName = input("What is the customer name: ie Delta/Southwest ")
-
-# get Program Name
-#getProgramName = input("What is the program name: ie NEMS/WMSCR  ")
-
-"""
 # Type of connection
 def combo_clicked(event):
-    global connection_type_selected
-    connection_type_selected = connection_type_combo.get()
-    print(connection_type_selected)
-    return connection_type_selected
+    pass
 
 
 connection_type = [
@@ -78,19 +116,265 @@ connection_type = [
     "DTS",
     "DTE"
 ]
-connection_type_label = Label(top_level_window, text="Please select the type of connection:")
-connection_type_label.grid(row=row_level, column=0, padx=10, pady=10)
-connection_type_selected = StringVar()
-connection_type_combo = ttk.Combobox(top_level_window, values=connection_type)
+connection_type_label = Label(second_frame, text="Please select the type of connection:")
+connection_type_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
+connection_type_combo = ttk.Combobox(second_frame, values=connection_type)
 connection_type_combo.current(0)
 connection_type_combo.bind("<<ComboboxSelected>>", combo_clicked)
-connection_type_combo.grid(row=row_level, column=1, padx=10, pady=10)
+connection_type_combo.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
 row_level += 1
 
 
-print(connection_type_selected)
-"""
+# Get NESG Location
+def combo_clicked_for_nesg_location(event):
+    pass
+
+
+nesg_location = [
+    "ACY",
+    "OEX",
+    "SLC",
+    "ATL"
+]
+connection_type_label = Label(second_frame, text="Please select the type of connection:")
+connection_type_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
+connection_type_combo = ttk.Combobox(second_frame, values=nesg_location)
+connection_type_combo.current(0)
+connection_type_combo.bind("<<ComboboxSelected>>", combo_clicked_for_nesg_location)
+connection_type_combo.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+row_level += 1
+
+acyInterfaces = ["10.10.10.10", "internet", "11.11.11.11", "internet1",
+                 "12.12.12.12", "internet5", "13.13.13.13", "internet6"]
+
+oexInterfaces = ["20.20.20.20", "internet", "21.21.21.21", "internet1",
+                 "22.22.22.22", "internet5", "23.23.23.23", "internet6"]
+
+acyInternetInterfaces = ["10.10.10.10", "12.12.12.12"]
+
+oexInternetInterfaces = ["20.20.20.20", "22.22.22.22"]
+
+
+
+
+
+
+
+
 
 
 top_level_window.config(menu=my_menu)
 top_level_window.mainloop()
+
+"""
+
+SGService = "FTIH-SG-"
+ERNumber = "ER"
+subnetMask = "255.255.255.255"
+VERSION = "1.0"
+
+# get FTI crypto IP for ACY
+if NESGLocation == "ACY":
+   while True:
+       try:
+           acyFTICryptoIP = input(NESGLocation + " FTI Crypto IP: ")
+           ipaddress.ip_address(acyFTICryptoIP)
+           while not acyFTICryptoIP in acyInterfaces:
+              print ("IP not in ACY Internet crypto list")
+              acyFTICryptoIP = input(NESGLocation + " FTI Crypto IP: ")
+              ipaddress.ip_address(acyFTICryptoIP)
+       except ValueError:
+           print ("FTI Crypto IP not valid. Please try again.")
+           continue
+       else:
+           break
+   acyInterfacesNameIndex = (acyInterfaces.index(acyFTICryptoIP) + 1)
+   acyInterfacesNextHopIndex = (acyInterfaces.index(acyFTICryptoIP) + 2)
+   acyInterfacesCryptoMapIndex = (acyInterfaces.index(acyFTICryptoIP) + 3)
+
+# get FTI crypto IP for OEX
+if NESGLocation == "OEX":
+   while True:
+       try:
+           oexFTICryptoIP = input(NESGLocation + " FFTI Crypto IP: ")
+           ipaddress.ip_address(oexFTICryptoIP)
+           while not oexFTICryptoIP in oexInterfaces:
+              print ("IP not in OEX Internet crypto list")
+              oexFTICryptoIP = input(NESGLocation + " FFTI Crypto IP: ")
+              ipaddress.ip_address(oexFTICryptoIP)
+       except ValueError:
+           print ("FTI Crypto IP not valid. Please try again.")
+           continue
+       else:
+           break
+   oexInterfacesNameIndex = (oexInterfaces.index(oexFTICryptoIP) + 1)
+   oexInterfacesNextHopIndex = (oexInterfaces.index(oexFTICryptoIP) + 2)
+   oexInterfacesCryptoMapIndex = (oexInterfaces.index(oexFTICryptoIP) + 3)
+
+
+# get end user crypto IP
+while True:
+    try:
+        EndUserCryptoIP = input("End User Crypto IP: ")
+        ipaddress.ip_address(EndUserCryptoIP)
+    except ValueError:
+        print ("End User Crypto IP not valid. Please try again.")
+        continue
+    else:
+        break
+
+# get end user client IP(s)
+getNumberOfClientIPs = input("How many client IP's do they have: ")
+while not getNumberOfClientIPs.isdigit(): 
+    print ('Not a number')
+    getNumberOfClientIPs = input("How many client IP's do they have: ")
+
+# change input from string to digit
+getNumberOfClientIPsNumber = int(getNumberOfClientIPs)
+
+EndUserClientIP = []
+
+while True:
+	try:
+		for i in range(0, getNumberOfClientIPsNumber):
+			ClientIP = input("End User Client IP: ")
+			ipaddress.ip_address(ClientIP)
+			EndUserClientIP.append(ClientIP)
+	except ValueError:
+		print ("End User Client IP not valid. Please try again.")
+		continue
+	else:
+		break
+
+# get dst IP(s)
+getNumberOfDSTIPs = input("How many dst IP's do they have: ")
+while not getNumberOfDSTIPs.isdigit(): 
+    print ('Not a number')
+    getNumberOfDSTIPs = input("How many dst IP's do they have: ")
+
+# change input from string to digit
+getNumberOfDSTIPsNumber = int(getNumberOfDSTIPs)
+
+EndUserDSTIP = []
+
+while True:
+	try:
+		for i in range(0, getNumberOfDSTIPsNumber):
+			DSTIP = input("End User DST IP: ")
+			ipaddress.ip_address(DSTIP)
+			EndUserDSTIP.append(DSTIP)
+	except ValueError:
+		print ("End User DST IP not valid. Please try again.")
+		continue
+	else:
+		break
+
+# get crypto ACL Name
+getCryptoACLName = input("What is the name of the crypto ACL:  ")
+
+for i in range(1,2):
+	print ()
+
+print ("Now we will get the crypto sequence number for the crypto map.")
+print ("issue the command show run crypto and find the next number avaiable on the interface that the crypto will go on.")
+# get the crypto sequence number
+print ("Please enter the 2 or 3 digit sequence number: ")
+getSequenceNumber = input("What is the sequence number: ")
+while len(getSequenceNumber) > 3 or (not getSequenceNumber.isdigit()):
+    print ('Not a 2 or 3 digit sequence number')
+    getSequenceNumber = input("Please enter the 3 digit sequence number: ")
+
+for i in range(1,2):
+	print ()
+
+# get pre shared key
+getPreSharedKey = input("What is the pre shared key:  ")
+while not (len(getPreSharedKey) < 15):
+   print ("You have entered an not so secret key Please try again.")
+   getPreSharedKey = input("What is the pre shared key:  ")
+
+
+isNemsFlow = input("Is this a NEMS flow at ACY or OEX? (yes or no) ").lower()
+while not (isNemsFlow == "yes" or isNemsFlow == "no"):
+   isNemsFlow = input("Is this a NEMS flow at ACY or OEX? (yes or no) ").lower()         
+
+
+for i in range(1,3):
+	print ()
+
+# Open a file
+onBoardingFile = open("foo.txt", "w")
+
+onBoardingFile.write(getUserName + " created this config" + "\n")
+onBoardingFile.write("Customer name is: "+ getCustomerName + "\n")
+onBoardingFile.write("Program name is: "+ getProgramName + "\n")
+onBoardingFile.write("ER number is: " + ERNumber + getERNumber + "\n")
+onBoardingFile.write("SG service is: " + SGService + getSGService + "\n")
+onBoardingFile.write("The TSB number is: " + getTicketNumber + "\n")
+onBoardingFile.write("\n")
+onBoardingFile.write("\n")
+
+
+onBoardingFile.write("End User Crypto IP is " + EndUserCryptoIP + "\n")
+
+if NESGLocation == "ACY":
+   onBoardingFile.write("FTI Crypto IP is " + acyFTICryptoIP + "\n")
+elif NESGLocation == "OEX":
+   onBoardingFile.write("FTI Crypto IP is " + oexFTICryptoIP + "\n")
+
+for i in range(0, getNumberOfClientIPsNumber):
+	onBoardingFile.write ("End User Client IP is " + EndUserClientIP[i] + "\n")
+for i in range(0, getNumberOfDSTIPsNumber):
+	onBoardingFile.write ("End DST Client IP is " + EndUserDSTIP[i] + "\n")
+
+onBoardingFile.write("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-" + "\n")
+onBoardingFile.write("Below is the commands that you can copy and paste into the ASA" + "\n")
+onBoardingFile.write("\n")
+
+for i in range(0, getNumberOfClientIPsNumber):
+	for j in range(0, getNumberOfDSTIPsNumber):
+		onBoardingFile.write("access-list" + " " + getCryptoACLName + " " + "extended permit ip host " + EndUserClientIP[i] + " host " + EndUserDSTIP[j] + "\n")
+onBoardingFile.write("\n")
+
+if NESGLocation == "ACY":
+   onBoardingFile.write ("crypto map " + acyInterfaces[acyInterfacesCryptoMapIndex] + " " + getSequenceNumber + " " + "match address " + getCryptoACLName + "\n")
+   onBoardingFile.write ("crypto map " + acyInterfaces[acyInterfacesCryptoMapIndex] + " " + getSequenceNumber + " " + "set pfs group21" + "\n")
+   onBoardingFile.write ("crypto map " + acyInterfaces[acyInterfacesCryptoMapIndex] + " " + getSequenceNumber + " " + "set peer " + EndUserCryptoIP + "\n")
+   onBoardingFile.write ("crypto map " + acyInterfaces[acyInterfacesCryptoMapIndex] + " " + getSequenceNumber + " " + "set ikev2 ipsec-proposal VPN-NEW VPN-NEW-BACKUP" + "\n")
+   onBoardingFile.write ("crypto map " + acyInterfaces[acyInterfacesCryptoMapIndex] + " " + getSequenceNumber + " " + "set security-association lifetime seconds 28800" + "\n")
+   onBoardingFile.write("\n")
+elif NESGLocation == "OEX":
+   onBoardingFile.write ("crypto map " + oexInterfaces[oexInterfacesCryptoMapIndex] + " " + getSequenceNumber + " " + "match address " + getCryptoACLName + "\n")
+   onBoardingFile.write ("crypto map " + oexInterfaces[oexInterfacesCryptoMapIndex] + " " + getSequenceNumber + " " + "set pfs group21" + "\n")
+   onBoardingFile.write ("crypto map " + oexInterfaces[oexInterfacesCryptoMapIndex] + " " + getSequenceNumber + " " + "set peer " + EndUserCryptoIP + "\n")
+   onBoardingFile.write ("crypto map " + oexInterfaces[oexInterfacesCryptoMapIndex] + " " + getSequenceNumber + " " + "set ikev2 ipsec-proposal VPN-NEW VPN-NEW-BACKUP" + "\n")
+   onBoardingFile.write ("crypto map " + oexInterfaces[oexInterfacesCryptoMapIndex] + " " + getSequenceNumber + " " + "set security-association lifetime seconds 28800" + "\n")
+   onBoardingFile.write("\n")
+
+onBoardingFile.write ("tunnel-group " + EndUserCryptoIP + " " + "type ipsec-l2l" + "\n")
+onBoardingFile.write ("tunnel-group " + EndUserCryptoIP + " " + "ipsec-attributes" + "\n")
+onBoardingFile.write ("   ikev2 remote-authentication pre-shared-key " + getPreSharedKey + "\n")
+onBoardingFile.write ("   ikev2 local-authentication pre-shared-key " + getPreSharedKey + "\n")
+onBoardingFile.write("\n")
+
+
+if NESGLocation == "ACY":
+   onBoardingFile.write ("route " + acyInterfaces[acyInterfacesNameIndex] + " " + EndUserCryptoIP + " " + subnetMask + " " + acyInterfaces[acyInterfacesNextHopIndex] + "\n")
+   for i in range(0, getNumberOfClientIPsNumber):
+      onBoardingFile.write ("route "+ acyInterfaces[acyInterfacesNameIndex] + " " + EndUserClientIP[i] + " " + subnetMask + " " +  acyInterfaces[acyInterfacesNextHopIndex] + "\n")
+onBoardingFile.write("\n")
+
+if NESGLocation == "OEX":
+   onBoardingFile.write ("route " + oexInterfaces[oexInterfacesNameIndex] + " " + EndUserCryptoIP + " " + subnetMask + " " + oexInterfaces[oexInterfacesNextHopIndex] + "\n")
+   for i in range(0, getNumberOfClientIPsNumber):
+      onBoardingFile.write ("route "+ oexInterfaces[oexInterfacesNameIndex] + " " + EndUserClientIP[i] + " " + subnetMask + " " +  oexInterfaces[oexInterfacesNextHopIndex] + "\n")
+onBoardingFile.write("\n")
+
+if isNemsFlow == "yes":
+	onBoardingFile.write ("object-group network NEMS-Client" + "\n")
+	for i in range(0, getNumberOfClientIPsNumber):
+		onBoardingFile.write ("   network-object object " + EndUserClientIP[i] + "\n")
+
+# Close opend file
+onBoardingFile.close()
+"""
