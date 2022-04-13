@@ -166,7 +166,7 @@ def save_to_file():
     on_boarding_file.write("The TSB number is: " + get_ticket_number_entry.get() + "\n")
     on_boarding_file.write("\n")
     on_boarding_file.write("\n")
-    on_boarding_file.write("End User Crypto IP is " + end_user_crypto_ip_entry.get() + "\n")
+    #on_boarding_file.write("End User Crypto IP is " + end_user_crypto_ip_entry.get() + "\n")
 
     """
     for i in range(0, getNumberOfClientIPsNumber):
