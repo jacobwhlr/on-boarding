@@ -105,63 +105,159 @@ row_level += 1
 
 
 # Type of connection
-def nesg_combo_clicked(event):
-    pass
+def delete_text_connection(event):
+    try:
+        nesg_connection_type_entry.delete(0, END)
+    except:
+        pass
 
 
-nesg_connection_type = [
-    "Internet",
-    "Matrix",
-    "ED6",
-    "DTS",
-    "DTE"
-]
-connection_type_label = Label(second_frame, text="Please select the type of connection:")
-connection_type_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
-connection_type_combo = ttk.Combobox(second_frame, values=nesg_connection_type)
-connection_type_combo.current(0)
-connection_type_combo.bind("<<ComboboxSelected>>", nesg_combo_clicked)
-connection_type_combo.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+nesg_connection_type_label = Label(second_frame, text="Please select the type of connection:")
+nesg_connection_type_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
+nesg_connection_type_entry = Entry(second_frame)
+nesg_connection_type_entry.insert(0, "Internet/ED6/DTS/DTE")
+nesg_connection_type_entry.bind("<FocusIn>", delete_text_connection)
+nesg_connection_type_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
 row_level += 1
 
 
 # Get NESG Location
-def combo_clicked_for_nesg_location(event):
-    pass
+def delete_text_location(event):
+    try:
+        nesg_connection_location_entry.delete(0, END)
+    except:
+        pass
 
 
-nesg_location = [
-    "ACY",
-    "OEX",
-    "SLC",
-    "ATL"
-]
-connection_type_label = Label(second_frame, text="Please select the type of connection:")
-connection_type_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
-connection_type_combo = ttk.Combobox(second_frame, values=nesg_location)
-connection_type_combo.current(0)
-connection_type_combo.bind("<<ComboboxSelected>>", combo_clicked_for_nesg_location)
-connection_type_combo.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+nesg_connection_location_label = Label(second_frame, text="Please select the type of connection:")
+nesg_connection_location_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
+nesg_connection_location_entry = Entry(second_frame)
+nesg_connection_location_entry.insert(0, "ACY/OEX/SLC/ATL")
+nesg_connection_location_entry.bind("<FocusIn>", delete_text_location)
+nesg_connection_location_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
 row_level += 1
 
-acyInterfaces = ["10.10.10.10", "internet", "11.11.11.11", "internet1",
-                 "12.12.12.12", "internet5", "13.13.13.13", "internet6"]
+# get end user crypto IP
+end_user_crypto_ip_label = Label(second_frame, text="What is the customers crypto IP? ")
+end_user_crypto_ip_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
+end_user_crypto_ip_entry = Entry(second_frame)
+end_user_crypto_ip_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+row_level += 1
 
-oexInterfaces = ["20.20.20.20", "internet", "21.21.21.21", "internet1",
-                 "22.22.22.22", "internet5", "23.23.23.23", "internet6"]
+# get end user crypto IP
+end_user_crypto_ip_label = Label(second_frame, text="What is the customers crypto IP? ")
+end_user_crypto_ip_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
+end_user_crypto_ip_entry = Entry(second_frame)
+end_user_crypto_ip_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+row_level += 1
 
-acyInternetInterfaces = ["10.10.10.10", "12.12.12.12"]
+# Buttons to save to file or reset all fields
+def save_to_file():
+    sg_service = "FTIH-SG-"
+    er_number = "ER"
+    # Open a file
+    on_boarding_file = open("foo.txt", "w")
 
-oexInternetInterfaces = ["20.20.20.20", "22.22.22.22"]
+    on_boarding_file.write(get_user_name_entry.get() + " created this config" + "\n")
+    on_boarding_file.write("Customer name is: " + get_customer_name_entry.get() + "\n")
+    on_boarding_file.write("Program name is: " + get_program_name_entry.get() + "\n")
+    on_boarding_file.write("ER number is: " + er_number + get_er_number_entry.get() + "\n")
+    on_boarding_file.write("SG service is: " + sg_service + get_sg_service_entry.get() + "\n")
+    on_boarding_file.write("The TSB number is: " + get_ticket_number_entry.get() + "\n")
+    on_boarding_file.write("\n")
+    on_boarding_file.write("\n")
+    on_boarding_file.write("End User Crypto IP is " + end_user_crypto_ip_entry.get() + "\n")
+
+    """
+    for i in range(0, getNumberOfClientIPsNumber):
+        onBoardingFile.write("End User Client IP is " + EndUserClientIP[i] + "\n")
+    for i in range(0, getNumberOfDSTIPsNumber):
+        onBoardingFile.write("End DST Client IP is " + EndUserDSTIP[i] + "\n")
+
+    onBoardingFile.write("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-" + "\n")
+    onBoardingFile.write("Below is the commands that you can copy and paste into the ASA" + "\n")
+    onBoardingFile.write("\n")
+
+    for i in range(0, getNumberOfClientIPsNumber):
+        for j in range(0, getNumberOfDSTIPsNumber):
+            onBoardingFile.write(
+                "access-list" + " " + getCryptoACLName + " " + "extended permit ip host " + EndUserClientIP[
+                    i] + " host " + EndUserDSTIP[j] + "\n")
+    onBoardingFile.write("\n")
+
+    if NESGLocation == "ACY":
+        onBoardingFile.write("crypto map " + acyInterfaces[
+            acyInterfacesCryptoMapIndex] + " " + getSequenceNumber + " " + "match address " + getCryptoACLName + "\n")
+        onBoardingFile.write("crypto map " + acyInterfaces[
+            acyInterfacesCryptoMapIndex] + " " + getSequenceNumber + " " + "set pfs group21" + "\n")
+        onBoardingFile.write("crypto map " + acyInterfaces[
+            acyInterfacesCryptoMapIndex] + " " + getSequenceNumber + " " + "set peer " + EndUserCryptoIP + "\n")
+        onBoardingFile.write("crypto map " + acyInterfaces[
+            acyInterfacesCryptoMapIndex] + " " + getSequenceNumber + " " + "set ikev2 ipsec-proposal VPN-NEW VPN-NEW-BACKUP" + "\n")
+        onBoardingFile.write("crypto map " + acyInterfaces[
+            acyInterfacesCryptoMapIndex] + " " + getSequenceNumber + " " + "set security-association lifetime seconds 28800" + "\n")
+        onBoardingFile.write("\n")
+    elif NESGLocation == "OEX":
+        onBoardingFile.write("crypto map " + oexInterfaces[
+            oexInterfacesCryptoMapIndex] + " " + getSequenceNumber + " " + "match address " + getCryptoACLName + "\n")
+        onBoardingFile.write("crypto map " + oexInterfaces[
+            oexInterfacesCryptoMapIndex] + " " + getSequenceNumber + " " + "set pfs group21" + "\n")
+        onBoardingFile.write("crypto map " + oexInterfaces[
+            oexInterfacesCryptoMapIndex] + " " + getSequenceNumber + " " + "set peer " + EndUserCryptoIP + "\n")
+        onBoardingFile.write("crypto map " + oexInterfaces[
+            oexInterfacesCryptoMapIndex] + " " + getSequenceNumber + " " + "set ikev2 ipsec-proposal VPN-NEW VPN-NEW-BACKUP" + "\n")
+        onBoardingFile.write("crypto map " + oexInterfaces[
+            oexInterfacesCryptoMapIndex] + " " + getSequenceNumber + " " + "set security-association lifetime seconds 28800" + "\n")
+        onBoardingFile.write("\n")
+
+    onBoardingFile.write("tunnel-group " + EndUserCryptoIP + " " + "type ipsec-l2l" + "\n")
+    onBoardingFile.write("tunnel-group " + EndUserCryptoIP + " " + "ipsec-attributes" + "\n")
+    onBoardingFile.write("   ikev2 remote-authentication pre-shared-key " + getPreSharedKey + "\n")
+    onBoardingFile.write("   ikev2 local-authentication pre-shared-key " + getPreSharedKey + "\n")
+    onBoardingFile.write("\n")
+
+    if NESGLocation == "ACY":
+        onBoardingFile.write(
+            "route " + acyInterfaces[acyInterfacesNameIndex] + " " + EndUserCryptoIP + " " + subnetMask + " " +
+            acyInterfaces[acyInterfacesNextHopIndex] + "\n")
+        for i in range(0, getNumberOfClientIPsNumber):
+            onBoardingFile.write(
+                "route " + acyInterfaces[acyInterfacesNameIndex] + " " + EndUserClientIP[i] + " " + subnetMask + " " +
+                acyInterfaces[acyInterfacesNextHopIndex] + "\n")
+    onBoardingFile.write("\n")
+
+    if NESGLocation == "OEX":
+        onBoardingFile.write(
+            "route " + oexInterfaces[oexInterfacesNameIndex] + " " + EndUserCryptoIP + " " + subnetMask + " " +
+            oexInterfaces[oexInterfacesNextHopIndex] + "\n")
+        for i in range(0, getNumberOfClientIPsNumber):
+            onBoardingFile.write(
+                "route " + oexInterfaces[oexInterfacesNameIndex] + " " + EndUserClientIP[i] + " " + subnetMask + " " +
+                oexInterfaces[oexInterfacesNextHopIndex] + "\n")
+    onBoardingFile.write("\n")
+
+    if isNemsFlow == "yes":
+        onBoardingFile.write("object-group network NEMS-Client" + "\n")
+        for i in range(0, getNumberOfClientIPsNumber):
+            onBoardingFile.write("   network-object object " + EndUserClientIP[i] + "\n")
+    """
+    # Close opend file
+    on_boarding_file.close()
 
 
+def reset_all_fields():
+    get_user_name_entry.delete(0, END)
+    get_customer_name_entry.delete(0, END)
+    get_program_name_entry.delete(0, END)
+    get_er_number_entry.delete(0, END)
+    get_sg_service_entry.delete(0, END)
+    get_ticket_number_entry.delete(0, END)
 
 
-
-
-
-
-
+save_button = Button(second_frame, text="Save", command=save_to_file)
+save_button.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
+reset_button = Button(second_frame, text="Reset", command=reset_all_fields)
+reset_button.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
 
 top_level_window.config(menu=my_menu)
 top_level_window.mainloop()
