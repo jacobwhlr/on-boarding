@@ -105,11 +105,11 @@ row_level += 1
 
 
 # Type of connection
-def combo_clicked(event):
+def nesg_combo_clicked(event):
     pass
 
 
-connection_type = [
+nesg_connection_type = [
     "Internet",
     "Matrix",
     "ED6",
@@ -118,9 +118,9 @@ connection_type = [
 ]
 connection_type_label = Label(second_frame, text="Please select the type of connection:")
 connection_type_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
-connection_type_combo = ttk.Combobox(second_frame, values=connection_type)
+connection_type_combo = ttk.Combobox(second_frame, values=nesg_connection_type)
 connection_type_combo.current(0)
-connection_type_combo.bind("<<ComboboxSelected>>", combo_clicked)
+connection_type_combo.bind("<<ComboboxSelected>>", nesg_combo_clicked)
 connection_type_combo.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
 row_level += 1
 
