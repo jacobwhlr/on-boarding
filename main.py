@@ -21,6 +21,16 @@ second_frame = Frame(my_canvas)
 my_canvas.create_window((0, 0), window=second_frame, anchor="nw")
 
 """
+Global Variables
+"""
+acy_interfaces = ["10.10.10.10", "internet", "11.11.11.11", "internet1",
+                  "12.12.12.12", "internet5", "13.13.13.13", "internet6"]
+
+oex_interfaces = ["20.20.20.20", "internet", "21.21.21.21", "internet1",
+                  "22.22.22.22", "internet5", "23.23.23.23", "internet6"]
+
+
+"""
 Functions
 """
 
@@ -46,6 +56,67 @@ def validate_tsb_number():
         get_ticket_number_entry.configure(bg="red")
     else:
         get_ticket_number_entry.configure(bg="white")
+
+
+def validate_type_of_connection():
+    type_of_connection = nesg_connection_type_entry.get().lower()
+    if (type_of_connection == "internet") or (type_of_connection == "ed6") or \
+        (type_of_connection == "dts") or (type_of_connection == "dte"):
+        nesg_connection_type_entry.configure(bg="white")
+    else:
+        nesg_connection_type_entry.configure(bg="red")
+
+
+def delete_text_connection(event):
+    try:
+        nesg_connection_type_entry.delete(0, END)
+    except ValueError:
+        pass
+
+
+def validate_nesg_location():
+    location_of_connection = nesg_connection_location_entry.get().lower()
+    if (location_of_connection == "acy") or (location_of_connection == "oex") or \
+        (location_of_connection == "slc") or (location_of_connection == "atl"):
+        nesg_connection_type_entry.configure(bg="white")
+    else:
+        nesg_connection_type_entry.configure(bg="red")
+
+
+def delete_text_location(event):
+    try:
+        nesg_connection_location_entry.delete(0, END)
+    except ValueError:
+        pass
+
+
+def validate_fti_crypto_ip():
+    global acy_interfaces_name_index
+    global acy_interfaces_next_hop_index
+    global acy_interfaces_crypto_map_index
+    global oex_interfaces_name_index
+    global oex_interfaces_next_hop_index
+    global oex_interfaces_crypto_map_index
+
+    nesg_location = nesg_connection_location_entry.get().lower()
+    nesg_crypto_ip = fti_crypto_ip_entry.get()
+
+    if nesg_location == 'acy':
+        if nesg_crypto_ip not in acy_interfaces:
+            fti_crypto_ip_entry.configure(bg="red")
+        else:
+            fti_crypto_ip_entry.configure(bg="white")
+            acy_interfaces_name_index = (acy_interfaces.index(nesg_crypto_ip) + 1)
+            acy_interfaces_next_hop_index = (acy_interfaces.index(nesg_crypto_ip) + 2)
+            acy_interfaces_crypto_map_index = (acy_interfaces.index(nesg_crypto_ip) + 3)
+    elif nesg_location == 'oex':
+        if nesg_crypto_ip not in oex_interfaces:
+            fti_crypto_ip_entry.configure(bg="red")
+        else:
+            fti_crypto_ip_entry.configure(bg="white")
+            oex_interfaces_name_index = (oex_interfaces.index(nesg_crypto_ip) + 1)
+            oex_interfaces_next_hop_index = (oex_interfaces.index(nesg_crypto_ip) + 2)
+            oex_interfaces_crypto_map_index = (oex_interfaces.index(nesg_crypto_ip) + 3)
 
 
 def validate_end_user_crypto_ip():
@@ -81,30 +152,12 @@ def validate_password():
         else:
             special_case_count += 1
 
-    if (password_length <= 14) or \
-        (lower_case_count <= 1) or \
-        (upper_case_count <= 1) or \
-        (digit_case_count <= 1) or \
+    if (password_length <= 14) or (lower_case_count <= 1) or \
+        (upper_case_count <= 1) or (digit_case_count <= 1) or \
         (special_case_count <= 1):
         crypto_psk_entry.configure(bg="red")
     else:
         crypto_psk_entry.configure(bg="white")
-
-
-# Type of connection
-def delete_text_connection(event):
-    try:
-        nesg_connection_type_entry.delete(0, END)
-    except ValueError:
-        pass
-
-
-# Get NESG Location
-def delete_text_location(event):
-    try:
-        nesg_connection_location_entry.delete(0, END)
-    except ValueError:
-        pass
 
 
 def validate_for_file():
@@ -116,9 +169,9 @@ def save_to_file():
     sg_service = "FTIH-SG-"
     er_number = "ER"
     subnet_mask = "255.255.255.255"
+    """
     # Open a file
     on_boarding_file = open("test_output.txt", "w")
-
     on_boarding_file.write(get_user_name_entry.get() + " created this config" + "\n")
     on_boarding_file.write("Customer name is: " + get_customer_name_entry.get() + "\n")
     on_boarding_file.write("Program name is: " + get_program_name_entry.get() + "\n")
@@ -135,19 +188,13 @@ def save_to_file():
     on_boarding_file.write("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-" + "\n")
     on_boarding_file.write("Below is the commands that you can copy and paste into the ASA" + "\n")
     on_boarding_file.write("\n")
-    on_boarding_file.write("access-list" + " " + crypto_acl_entry.get() + " " + "extended permit ip host " +
-                           end_user_customer_ip_entry.get() + " host " + end_user_dst_ip_entry.get() + "\n")
+    on_boarding_file.write("access-list" + " " + crypto_acl_entry.get() + " " + "extended permit ip host " + end_user_customer_ip_entry.get() + " host " + end_user_dst_ip_entry.get() + "\n")
     on_boarding_file.write("\n")
-    on_boarding_file.write("crypto map " + crypto_map_name_entry.get() + " " + crypto_sequence_number_entry.get() +
-                           " " + "match address " + crypto_acl_entry.get() + "\n")
-    on_boarding_file.write("crypto map " + crypto_map_name_entry.get() + " " + crypto_sequence_number_entry.get() +
-                           " " + "set pfs group21" + "\n")
-    on_boarding_file.write("crypto map " + crypto_map_name_entry.get() + " " + crypto_sequence_number_entry.get() +
-                           " " + "set peer " + end_user_crypto_ip_entry.get() + "\n")
-    on_boarding_file.write("crypto map " + crypto_map_name_entry.get() + " " + crypto_sequence_number_entry.get() +
-                           " " + "set ikev2 ipsec-proposal VPN-NEW VPN-NEW-BACKUP" + "\n")
-    on_boarding_file.write("crypto map " + crypto_map_name_entry.get() + " " + crypto_sequence_number_entry.get() +
-                           " " + "set security-association lifetime seconds 28800" + "\n")
+    on_boarding_file.write("crypto map " + crypto_map_name_entry.get() + " " + crypto_sequence_number_entry.get() + " " + "match address " + crypto_acl_entry.get() + "\n")
+    on_boarding_file.write("crypto map " + crypto_map_name_entry.get() + " " + crypto_sequence_number_entry.get() + " " + "set pfs group21" + "\n")
+    on_boarding_file.write("crypto map " + crypto_map_name_entry.get() + " " + crypto_sequence_number_entry.get() + " " + "set peer " + end_user_crypto_ip_entry.get() + "\n")
+    on_boarding_file.write("crypto map " + crypto_map_name_entry.get() + " " + crypto_sequence_number_entry.get() + " " + "set ikev2 ipsec-proposal VPN-NEW VPN-NEW-BACKUP" + "\n")
+    on_boarding_file.write("crypto map " + crypto_map_name_entry.get() + " " + crypto_sequence_number_entry.get() + " " + "set security-association lifetime seconds 28800" + "\n")
     on_boarding_file.write("\n")
 
     on_boarding_file.write("tunnel-group " + end_user_crypto_ip_entry.get() + " " + "type ipsec-l2l" + "\n")
@@ -155,13 +202,12 @@ def save_to_file():
     on_boarding_file.write("   ikev2 remote-authentication pre-shared-key " + crypto_psk_entry.get() + "\n")
     on_boarding_file.write("   ikev2 local-authentication pre-shared-key " + crypto_psk_entry.get() + "\n")
     on_boarding_file.write("\n")
-    on_boarding_file.write("route " + asa_interface_entry.get() + " " + end_user_crypto_ip_entry.get() + " " +
-                           subnet_mask + " " + asa_interface_next_hop_entry.get() + "\n")
-    on_boarding_file.write("route " + asa_interface_entry.get() + " " + end_user_customer_ip_entry.get() + " " +
-                           subnet_mask + " " + asa_interface_next_hop_entry.get() + "\n")
+    on_boarding_file.write("route " + asa_interface_entry.get() + " " + end_user_crypto_ip_entry.get() + " " + subnet_mask + " " + asa_interface_next_hop_entry.get() + "\n")
+    on_boarding_file.write("route " + asa_interface_entry.get() + " " + end_user_customer_ip_entry.get() + " " + subnet_mask + " " + asa_interface_next_hop_entry.get() + "\n")
     on_boarding_file.write("\n")
     # Close opend file
     on_boarding_file.close()
+    """
 
 
 # Clear all the fields
@@ -179,11 +225,8 @@ def reset_all_fields():
     end_user_customer_ip_entry.delete(0, END)
     end_user_dst_ip_entry.delete(0, END)
     crypto_acl_entry.delete(0, END)
-    crypto_map_name_entry.delete(0, END)
-    asa_interface_entry.delete(0, END)
     crypto_sequence_number_entry.delete(0, END)
     crypto_psk_entry.delete(0, END)
-    asa_interface_next_hop_entry.delete(0, END)
 
 
 """
@@ -274,7 +317,6 @@ get_ticket_number_button = Button(second_frame, text="Validate", command=validat
 get_ticket_number_button.grid(row=row_level, column=2, padx=5, pady=5, sticky=W)
 row_level += 1
 
-
 # Type of connection
 nesg_connection_type_label = Label(second_frame, text="What is the type of connection:")
 nesg_connection_type_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
@@ -282,8 +324,9 @@ nesg_connection_type_entry = Entry(second_frame)
 nesg_connection_type_entry.insert(0, "Internet/ED6/DTS/DTE")
 nesg_connection_type_entry.bind("<FocusIn>", delete_text_connection)
 nesg_connection_type_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+nesg_connection_type_button = Button(second_frame, text="Validate", command=validate_type_of_connection)
+nesg_connection_type_button.grid(row=row_level, column=2, padx=5, pady=5, sticky=W)
 row_level += 1
-
 
 # Get NESG Location
 nesg_connection_location_label = Label(second_frame, text="NESG Location")
@@ -292,6 +335,8 @@ nesg_connection_location_entry = Entry(second_frame)
 nesg_connection_location_entry.insert(0, "ACY/OEX/SLC/ATL")
 nesg_connection_location_entry.bind("<FocusIn>", delete_text_location)
 nesg_connection_location_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+nesg_connection_location_button = Button(second_frame, text="Validate", command=validate_nesg_location)
+nesg_connection_location_button.grid(row=row_level, column=2, padx=5, pady=5, sticky=W)
 row_level += 1
 
 # FTI Crypto IP
@@ -299,6 +344,8 @@ fti_crypto_ip_label = Label(second_frame, text="What is the FTI Crypto IP: ")
 fti_crypto_ip_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
 fti_crypto_ip_entry = Entry(second_frame)
 fti_crypto_ip_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+fti_crypto_ip_button = Button(second_frame, text="Validate", command=validate_fti_crypto_ip)
+fti_crypto_ip_button.grid(row=row_level, column=2, padx=5, pady=5, sticky=W)
 row_level += 1
 
 # get end user crypto IP
@@ -331,20 +378,6 @@ crypto_acl_entry = Entry(second_frame)
 crypto_acl_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
 row_level += 1
 
-# name of crypto map on the interface
-crypto_map_name_label = Label(second_frame, text="What is the crypto map name? ")
-crypto_map_name_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
-crypto_map_name_entry = Entry(second_frame)
-crypto_map_name_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
-row_level += 1
-
-# name of asa interface
-asa_interface_label = Label(second_frame, text="What is the ASA interface name? ")
-asa_interface_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
-asa_interface_entry = Entry(second_frame)
-asa_interface_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
-row_level += 1
-
 # next sequence number
 crypto_sequence_number_label = Label(second_frame, text="What is the next sequence number ")
 crypto_sequence_number_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
@@ -362,14 +395,6 @@ crypto_psk_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
 crypto_psk_button = Button(second_frame, text="Validate", command=validate_password)
 crypto_psk_button.grid(row=row_level, column=2, padx=5, pady=5, sticky=W)
 row_level += 1
-
-# next hop interface IP
-asa_interface_next_hop_label = Label(second_frame, text="What is the next hop interface IP ")
-asa_interface_next_hop_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
-asa_interface_next_hop_entry = Entry(second_frame)
-asa_interface_next_hop_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
-row_level += 1
-
 
 # Buttons to save to file or reset all fields
 validate_button = Button(second_frame, text="Validate", command=validate_for_file)
