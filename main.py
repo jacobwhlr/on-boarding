@@ -35,6 +35,48 @@ Functions
 """
 
 
+def about_new_window():
+    # Toplevel object which will be treated as a new window
+    new_window = Toplevel(top_level_window)
+
+    # sets the title of theToplevel widget
+    new_window.title("About")
+
+    # sets the geometry of toplevel
+    new_window.geometry("200x200")
+
+    # A Label widget to show in toplevel
+    author_name = "Jacob"
+    version_number = "1.0"
+    Label(new_window, text=f"Author: {author_name}").grid(row=0, column=0, sticky="W")
+    Label(new_window, text=f"Version: {version_number}").grid(row=1, column=0, sticky="W")
+
+
+def hide_all_frames():
+    about_program_frame.grid_forget()
+
+
+def validate_user_name():
+    if not get_user_name_entry.get():
+        get_user_name_entry.configure(bg="red")
+    else:
+        get_user_name_entry.configure(bg="white")
+
+
+def validate_customer_name():
+    if not get_customer_name_entry.get():
+        get_customer_name_entry.configure(bg="red")
+    else:
+        get_customer_name_entry.configure(bg="white")
+
+
+def validate_program_name():
+    if not get_program_name_entry.get():
+        get_program_name_entry.configure(bg="red")
+    else:
+        get_program_name_entry.configure(bg="white")
+
+
 def validate_er_number():
     if len(get_er_number_entry.get()) != 6 or (not get_er_number_entry.get().isdigit()):
         get_er_number_entry.configure(bg="red")
@@ -91,32 +133,31 @@ def delete_text_location(event):
 
 
 def validate_fti_crypto_ip():
-    global acy_interfaces_name_index
-    global acy_interfaces_next_hop_index
-    global acy_interfaces_crypto_map_index
-    global oex_interfaces_name_index
-    global oex_interfaces_next_hop_index
-    global oex_interfaces_crypto_map_index
+    global interface_name_index
+    global interface_next_hop_index
+    global interface_crypto_map_index
+    global nesg_location_for_save
 
     nesg_location = nesg_connection_location_entry.get().lower()
     nesg_crypto_ip = fti_crypto_ip_entry.get()
+    nesg_location_for_save = fti_crypto_ip_entry.get()
 
     if nesg_location == 'acy':
         if nesg_crypto_ip not in acy_interfaces:
             fti_crypto_ip_entry.configure(bg="red")
         else:
             fti_crypto_ip_entry.configure(bg="white")
-            acy_interfaces_name_index = (acy_interfaces.index(nesg_crypto_ip) + 1)
-            acy_interfaces_next_hop_index = (acy_interfaces.index(nesg_crypto_ip) + 2)
-            acy_interfaces_crypto_map_index = (acy_interfaces.index(nesg_crypto_ip) + 3)
+            interface_name_index = (acy_interfaces.index(nesg_crypto_ip) + 1)
+            interface_next_hop_index = (acy_interfaces.index(nesg_crypto_ip) + 2)
+            interface_crypto_map_index = (acy_interfaces.index(nesg_crypto_ip) + 3)
     elif nesg_location == 'oex':
         if nesg_crypto_ip not in oex_interfaces:
             fti_crypto_ip_entry.configure(bg="red")
         else:
             fti_crypto_ip_entry.configure(bg="white")
-            oex_interfaces_name_index = (oex_interfaces.index(nesg_crypto_ip) + 1)
-            oex_interfaces_next_hop_index = (oex_interfaces.index(nesg_crypto_ip) + 2)
-            oex_interfaces_crypto_map_index = (oex_interfaces.index(nesg_crypto_ip) + 3)
+            interface_name_index = (oex_interfaces.index(nesg_crypto_ip) + 1)
+            interface_next_hop_index = (oex_interfaces.index(nesg_crypto_ip) + 2)
+            interface_crypto_map_index = (oex_interfaces.index(nesg_crypto_ip) + 3)
 
 
 def validate_end_user_crypto_ip():
@@ -125,6 +166,26 @@ def validate_end_user_crypto_ip():
         end_user_crypto_ip_entry.configure(bg="white")
     except ValueError:
         end_user_crypto_ip_entry.configure(bg="red")
+
+
+def number_of_client_ips():
+    number_of_ip = end_user_customer_ip_entry.get()
+    if not number_of_ip.isdigit():
+        end_user_customer_ip_entry.configure(bg="red")
+    else:
+        end_user_customer_ip_entry.configure(bg="white")
+        new = Toplevel(second_frame)
+        new.geometry("750x250")
+        new.title("New Window")
+
+
+
+
+def validate_crypto_acl_name():
+    if not crypto_acl_entry.get():
+        crypto_acl_entry.configure(bg="red")
+    else:
+        crypto_acl_entry.configure(bg="white")
 
 
 def validate_sequence_number():
@@ -167,9 +228,9 @@ def validate_for_file():
 # Save file
 def save_to_file():
     sg_service = "FTIH-SG-"
-    er_number = "ER"
+    er_number = "ER-"
     subnet_mask = "255.255.255.255"
-    """
+
     # Open a file
     on_boarding_file = open("test_output.txt", "w")
     on_boarding_file.write(get_user_name_entry.get() + " created this config" + "\n")
@@ -190,27 +251,35 @@ def save_to_file():
     on_boarding_file.write("\n")
     on_boarding_file.write("access-list" + " " + crypto_acl_entry.get() + " " + "extended permit ip host " + end_user_customer_ip_entry.get() + " host " + end_user_dst_ip_entry.get() + "\n")
     on_boarding_file.write("\n")
-    on_boarding_file.write("crypto map " + crypto_map_name_entry.get() + " " + crypto_sequence_number_entry.get() + " " + "match address " + crypto_acl_entry.get() + "\n")
-    on_boarding_file.write("crypto map " + crypto_map_name_entry.get() + " " + crypto_sequence_number_entry.get() + " " + "set pfs group21" + "\n")
-    on_boarding_file.write("crypto map " + crypto_map_name_entry.get() + " " + crypto_sequence_number_entry.get() + " " + "set peer " + end_user_crypto_ip_entry.get() + "\n")
-    on_boarding_file.write("crypto map " + crypto_map_name_entry.get() + " " + crypto_sequence_number_entry.get() + " " + "set ikev2 ipsec-proposal VPN-NEW VPN-NEW-BACKUP" + "\n")
-    on_boarding_file.write("crypto map " + crypto_map_name_entry.get() + " " + crypto_sequence_number_entry.get() + " " + "set security-association lifetime seconds 28800" + "\n")
-    on_boarding_file.write("\n")
+
+    if nesg_location_for_save == 'acy':
+        on_boarding_file.write("crypto map " + acy_interfaces[interface_crypto_map_index] + " " + crypto_sequence_number_entry.get() + " " + "match address " + crypto_acl_entry.get() + "\n")
+        on_boarding_file.write("crypto map " + acy_interfaces[interface_crypto_map_index] + " " + crypto_sequence_number_entry.get() + " " + "set pfs group21" + "\n")
+        on_boarding_file.write("crypto map " + acy_interfaces[interface_crypto_map_index] + " " + crypto_sequence_number_entry.get() + " " + "set peer " + end_user_crypto_ip_entry.get() + "\n")
+        on_boarding_file.write("crypto map " + acy_interfaces[interface_crypto_map_index] + " " + crypto_sequence_number_entry.get() + " " + "set ikev2 ipsec-proposal VPN-NEW VPN-NEW-BACKUP" + "\n")
+        on_boarding_file.write("crypto map " + acy_interfaces[interface_crypto_map_index] + " " + crypto_sequence_number_entry.get() + " " + "set security-association lifetime seconds 28800" + "\n")
+        on_boarding_file.write("\n")
+    elif nesg_location_for_save == 'oex':
+        on_boarding_file.write("crypto map " + oex_interfaces[interface_crypto_map_index] + " " + crypto_sequence_number_entry.get() + " " + "match address " + crypto_acl_entry.get() + "\n")
+        on_boarding_file.write("crypto map " + oex_interfaces[interface_crypto_map_index] + " " + crypto_sequence_number_entry.get() + " " + "set pfs group21" + "\n")
+        on_boarding_file.write("crypto map " + oex_interfaces[interface_crypto_map_index] + " " + crypto_sequence_number_entry.get() + " " + "set peer " + end_user_crypto_ip_entry.get() + "\n")
+        on_boarding_file.write("crypto map " + oex_interfaces[interface_crypto_map_index] + " " + crypto_sequence_number_entry.get() + " " + "set ikev2 ipsec-proposal VPN-NEW VPN-NEW-BACKUP" + "\n")
+        on_boarding_file.write("crypto map " + oex_interfaces[interface_crypto_map_index] + " " + crypto_sequence_number_entry.get() + " " + "set security-association lifetime seconds 28800" + "\n")
+        on_boarding_file.write("\n")
 
     on_boarding_file.write("tunnel-group " + end_user_crypto_ip_entry.get() + " " + "type ipsec-l2l" + "\n")
     on_boarding_file.write("tunnel-group " + end_user_crypto_ip_entry.get() + " " + "ipsec-attributes" + "\n")
     on_boarding_file.write("   ikev2 remote-authentication pre-shared-key " + crypto_psk_entry.get() + "\n")
     on_boarding_file.write("   ikev2 local-authentication pre-shared-key " + crypto_psk_entry.get() + "\n")
     on_boarding_file.write("\n")
-    on_boarding_file.write("route " + asa_interface_entry.get() + " " + end_user_crypto_ip_entry.get() + " " + subnet_mask + " " + asa_interface_next_hop_entry.get() + "\n")
-    on_boarding_file.write("route " + asa_interface_entry.get() + " " + end_user_customer_ip_entry.get() + " " + subnet_mask + " " + asa_interface_next_hop_entry.get() + "\n")
+#    on_boarding_file.write("route " + asa_interface_entry.get() + " " + end_user_crypto_ip_entry.get() + " " + subnet_mask + " " + asa_interface_next_hop_entry.get() + "\n")
+#    on_boarding_file.write("route " + asa_interface_entry.get() + " " + end_user_customer_ip_entry.get() + " " + subnet_mask + " " + asa_interface_next_hop_entry.get() + "\n")
     on_boarding_file.write("\n")
     # Close opend file
     on_boarding_file.close()
-    """
 
 
-# Clear all the fields
+# Clear all the fields button
 def reset_all_fields():
     get_user_name_entry.delete(0, END)
     get_customer_name_entry.delete(0, END)
@@ -232,29 +301,6 @@ def reset_all_fields():
 """
 Menu bar
 """
-
-
-def about_new_window():
-    # Toplevel object which will be treated as a new window
-    new_window = Toplevel(top_level_window)
-
-    # sets the title of theToplevel widget
-    new_window.title("About")
-
-    # sets the geometry of toplevel
-    new_window.geometry("200x200")
-
-    # A Label widget to show in toplevel
-    author_name = "Jacob"
-    version_number = "1.0"
-    Label(new_window, text=f"Author: {author_name}").grid(row=0, column=0, sticky="W")
-    Label(new_window, text=f"Version: {version_number}").grid(row=1, column=0, sticky="W")
-
-
-def hide_all_frames():
-    about_program_frame.grid_forget()
-
-
 my_menu = Menu(top_level_window)
 
 file_menu = Menu(my_menu, tearoff=0)
@@ -274,6 +320,8 @@ get_user_name_label = Label(second_frame, text="What is your name: ")
 get_user_name_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
 get_user_name_entry = Entry(second_frame)
 get_user_name_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+get_user_name_button = Button(second_frame, text="Validate", command=validate_user_name)
+get_user_name_button.grid(row=row_level, column=2, padx=5, pady=5, sticky=W)
 row_level += 1
 
 # get Customer Name
@@ -281,6 +329,8 @@ get_customer_name_label = Label(second_frame, text="What is the customer name: "
 get_customer_name_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
 get_customer_name_entry = Entry(second_frame)
 get_customer_name_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+get_customer_name_button = Button(second_frame, text="Validate", command=validate_customer_name)
+get_customer_name_button.grid(row=row_level, column=2, padx=5, pady=5, sticky=W)
 row_level += 1
 
 # get Program Name
@@ -288,6 +338,8 @@ get_program_name_label = Label(second_frame, text="What is the program name: ")
 get_program_name_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
 get_program_name_entry = Entry(second_frame)
 get_program_name_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+get_program_name_button = Button(second_frame, text="Validate", command=validate_program_name)
+get_program_name_button.grid(row=row_level, column=2, padx=5, pady=5, sticky=W)
 row_level += 1
 
 # Get \er number
@@ -329,7 +381,7 @@ nesg_connection_type_button.grid(row=row_level, column=2, padx=5, pady=5, sticky
 row_level += 1
 
 # Get NESG Location
-nesg_connection_location_label = Label(second_frame, text="NESG Location")
+nesg_connection_location_label = Label(second_frame, text="NESG Location: ")
 nesg_connection_location_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
 nesg_connection_location_entry = Entry(second_frame)
 nesg_connection_location_entry.insert(0, "ACY/OEX/SLC/ATL")
@@ -358,10 +410,12 @@ end_user_crypto_ip_button.grid(row=row_level, column=2, padx=5, pady=5, sticky=W
 row_level += 1
 
 # get end user client IP
-end_user_customer_ip_label = Label(second_frame, text="What is the customers client IP? ")
+end_user_customer_ip_label = Label(second_frame, text="How many client IP's? ")
 end_user_customer_ip_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
 end_user_customer_ip_entry = Entry(second_frame)
 end_user_customer_ip_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+end_user_customer_ip_button = Button(second_frame, text="Enter client IP's", command=number_of_client_ips)
+end_user_customer_ip_button.grid(row=row_level, column=2, padx=5, pady=5, sticky=W)
 row_level += 1
 
 # get end user dst IP
@@ -376,6 +430,8 @@ crypto_acl_label = Label(second_frame, text="What is the name of the crypto ACL?
 crypto_acl_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
 crypto_acl_entry = Entry(second_frame)
 crypto_acl_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+crypto_acl_button = Button(second_frame, text="Validate", command=validate_crypto_acl_name)
+crypto_acl_button.grid(row=row_level, column=2, padx=5, pady=5, sticky=W)
 row_level += 1
 
 # next sequence number
