@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import ttk
+import ipaddress
 
 # Create the window
 top_level_window = Tk()
@@ -19,87 +20,75 @@ my_canvas.bind('<Configure>', lambda e: my_canvas.configure(scrollregion=my_canv
 second_frame = Frame(my_canvas)
 my_canvas.create_window((0, 0), window=second_frame, anchor="nw")
 
-
 """
-Menu bar
+Functions
 """
 
 
-def about_new_window():
-    # Toplevel object which will be treated as a new window
-    new_window = Toplevel(top_level_window)
-
-    # sets the title of theToplevel widget
-    new_window.title("About")
-
-    # sets the geometry of toplevel
-    new_window.geometry("200x200")
-
-    # A Label widget to show in toplevel
-    author_name = "Jacob"
-    version_number = "1.0"
-    Label(new_window, text=f"Author: {author_name}").grid(row=0, column=0, sticky="W")
-    Label(new_window, text=f"Version: {version_number}").grid(row=1, column=0, sticky="W")
+def validate_er_number():
+    if len(get_er_number_entry.get()) != 6 or (not get_er_number_entry.get().isdigit()):
+        get_er_number_entry.configure(bg="red")
+        validate_er_number_function = False
+        return validate_er_number_function
+    else:
+        get_er_number_entry.configure(bg="white")
 
 
-def hide_all_frames():
-    about_program_frame.grid_forget()
+def validate_sg_number():
+    if len(get_sg_service_entry.get()) != 6 or (not get_sg_service_entry.get().isdigit()):
+        get_sg_service_entry.configure(bg="red")
+    else:
+        get_sg_service_entry.configure(bg="white")
 
 
-my_menu = Menu(top_level_window)
+def validate_tsb_number():
+    if len(get_ticket_number_entry.get()) != 13 or (not get_ticket_number_entry.get().isdigit()):
+        get_ticket_number_entry.configure(bg="red")
+    else:
+        get_ticket_number_entry.configure(bg="white")
 
-file_menu = Menu(my_menu, tearoff=0)
-my_menu.add_cascade(label="File", menu=file_menu)
-file_menu.add_command(label="Exit", command=top_level_window.quit)
 
-help_menu = Menu(my_menu, tearoff=0)
-my_menu.add_cascade(label="Help", menu=help_menu)
-help_menu.add_command(label="About", command=about_new_window)
+def validate_end_user_crypto_ip():
+    try:
+        ipaddress.ip_address(end_user_crypto_ip_entry.get())
+        end_user_crypto_ip_entry.configure(bg="white")
+    except ValueError:
+        end_user_crypto_ip_entry.configure(bg="red")
 
-about_program_frame = Frame(top_level_window)
 
-# Get basic info
-# get user who is building this flow out
-get_user_name_label = Label(second_frame, text="What is your name: ")
-get_user_name_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
-get_user_name_entry = Entry(second_frame)
-get_user_name_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
-row_level += 1
+def validate_sequence_number():
+    if len(get_sg_service_entry.get()) != 3 or (not get_sg_service_entry.get().isdigit()):
+        crypto_sequence_number_entry.configure(bg="red")
+    else:
+        crypto_sequence_number_entry.configure(bg="white")
 
-# get Customer Name
-get_customer_name_label = Label(second_frame, text="What is the customer name: ")
-get_customer_name_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
-get_customer_name_entry = Entry(second_frame)
-get_customer_name_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
-row_level += 1
 
-# get Program Name
-get_program_name_label = Label(second_frame, text="What is the program name: ")
-get_program_name_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
-get_program_name_entry = Entry(second_frame)
-get_program_name_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
-row_level += 1
+def validate_password():
+    password = crypto_psk_entry.get()
+    lower_case_count = 0
+    upper_case_count = 0
+    digit_case_count = 0
+    special_case_count = 0
+    password_length = len(password)
 
-# Get \er number
-get_er_number_label = Label(second_frame, text="What is the ER number: ")
-get_er_number_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
-get_er_number_entry = Entry(second_frame)
-get_er_number_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
-row_level += 1
+    for i in password:
+        if i.islower():
+            lower_case_count += 1
+        elif i.isupper():
+            upper_case_count += 1
+        elif i.isdigit():
+            digit_case_count += 1
+        else:
+            special_case_count += 1
 
-# Get sg number
-get_sg_service_label = Label(second_frame, text="What is the SG Service: ")
-get_sg_service_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
-get_sg_service_entry = Entry(second_frame)
-get_sg_service_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
-row_level += 1
-
-# get TSB Number
-get_ticket_number_label = Label(second_frame, text="What is the TSB number: ")
-get_ticket_number_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
-get_ticket_number_entry = Entry(second_frame)
-get_ticket_number_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
-row_level += 1
+    if (password_length <= 14) or \
+        (lower_case_count <= 1) or \
+        (upper_case_count <= 1) or \
+        (digit_case_count <= 1) or \
+        (special_case_count <= 1):
+        crypto_psk_entry.configure(bg="red")
+    else:
+        crypto_psk_entry.configure(bg="white")
 
 
 # Type of connection
@@ -110,15 +99,6 @@ def delete_text_connection(event):
         pass
 
 
-nesg_connection_type_label = Label(second_frame, text="What is the type of connection:")
-nesg_connection_type_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
-nesg_connection_type_entry = Entry(second_frame)
-nesg_connection_type_entry.insert(0, "Internet/ED6/DTS/DTE")
-nesg_connection_type_entry.bind("<FocusIn>", delete_text_connection)
-nesg_connection_type_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
-row_level += 1
-
-
 # Get NESG Location
 def delete_text_location(event):
     try:
@@ -127,86 +107,11 @@ def delete_text_location(event):
         pass
 
 
-nesg_connection_location_label = Label(second_frame, text="NESG Location")
-nesg_connection_location_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
-nesg_connection_location_entry = Entry(second_frame)
-nesg_connection_location_entry.insert(0, "ACY/OEX/SLC/ATL")
-nesg_connection_location_entry.bind("<FocusIn>", delete_text_location)
-nesg_connection_location_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
-row_level += 1
-
-# FTI Crypto IP
-fti_crypto_ip_label = Label(second_frame, text="What is the FTI Crypto IP: ")
-fti_crypto_ip_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
-fti_crypto_ip_entry = Entry(second_frame)
-fti_crypto_ip_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
-row_level += 1
-
-# get end user crypto IP
-end_user_crypto_ip_label = Label(second_frame, text="What is the customers crypto IP? ")
-end_user_crypto_ip_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
-end_user_crypto_ip_entry = Entry(second_frame)
-end_user_crypto_ip_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
-row_level += 1
-
-# get end user client IP
-end_user_customer_ip_label = Label(second_frame, text="What is the customers client IP? ")
-end_user_customer_ip_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
-end_user_customer_ip_entry = Entry(second_frame)
-end_user_customer_ip_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
-row_level += 1
-
-# get end user dst IP
-end_user_dst_ip_label = Label(second_frame, text="What is the customers dst IP? ")
-end_user_dst_ip_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
-end_user_dst_ip_entry = Entry(second_frame)
-end_user_dst_ip_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
-row_level += 1
-
-# name of crypto acl
-crypto_acl_label = Label(second_frame, text="What is the name of the crypto ACL? ")
-crypto_acl_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
-crypto_acl_entry = Entry(second_frame)
-crypto_acl_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
-row_level += 1
-
-# name of crypto map on the interface
-crypto_map_name_label = Label(second_frame, text="What is the crypto map name? ")
-crypto_map_name_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
-crypto_map_name_entry = Entry(second_frame)
-crypto_map_name_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
-row_level += 1
-
-# name of asa interface
-asa_interface_label = Label(second_frame, text="What is the ASA interface name? ")
-asa_interface_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
-asa_interface_entry = Entry(second_frame)
-asa_interface_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
-row_level += 1
-
-# next sequence number
-crypto_sequence_number_label = Label(second_frame, text="What is the next sequence number ")
-crypto_sequence_number_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
-crypto_sequence_number_entry = Entry(second_frame)
-crypto_sequence_number_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
-row_level += 1
-
-# get pre shared key
-crypto_psk_label = Label(second_frame, text="What is the PSK? ")
-crypto_psk_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
-crypto_psk_entry = Entry(second_frame)
-crypto_psk_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
-row_level += 1
-
-# next hop interface IP
-asa_interface_next_hop_label = Label(second_frame, text="What is the next hop interface IP ")
-asa_interface_next_hop_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
-asa_interface_next_hop_entry = Entry(second_frame)
-asa_interface_next_hop_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
-row_level += 1
+def validate_for_file():
+    pass
 
 
-# Buttons to save to file or reset all fields
+# Save file
 def save_to_file():
     sg_service = "FTIH-SG-"
     er_number = "ER"
@@ -259,6 +164,7 @@ def save_to_file():
     on_boarding_file.close()
 
 
+# Clear all the fields
 def reset_all_fields():
     get_user_name_entry.delete(0, END)
     get_customer_name_entry.delete(0, END)
@@ -280,10 +186,198 @@ def reset_all_fields():
     asa_interface_next_hop_entry.delete(0, END)
 
 
+"""
+Menu bar
+"""
+
+
+def about_new_window():
+    # Toplevel object which will be treated as a new window
+    new_window = Toplevel(top_level_window)
+
+    # sets the title of theToplevel widget
+    new_window.title("About")
+
+    # sets the geometry of toplevel
+    new_window.geometry("200x200")
+
+    # A Label widget to show in toplevel
+    author_name = "Jacob"
+    version_number = "1.0"
+    Label(new_window, text=f"Author: {author_name}").grid(row=0, column=0, sticky="W")
+    Label(new_window, text=f"Version: {version_number}").grid(row=1, column=0, sticky="W")
+
+
+def hide_all_frames():
+    about_program_frame.grid_forget()
+
+
+my_menu = Menu(top_level_window)
+
+file_menu = Menu(my_menu, tearoff=0)
+my_menu.add_cascade(label="File", menu=file_menu)
+file_menu.add_command(label="Exit", command=top_level_window.quit)
+
+help_menu = Menu(my_menu, tearoff=0)
+my_menu.add_cascade(label="Help", menu=help_menu)
+help_menu.add_command(label="About", command=about_new_window)
+
+about_program_frame = Frame(top_level_window)
+##########################################################################################################
+
+# Get basic info
+# get user who is building this flow out
+get_user_name_label = Label(second_frame, text="What is your name: ")
+get_user_name_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
+get_user_name_entry = Entry(second_frame)
+get_user_name_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+row_level += 1
+
+# get Customer Name
+get_customer_name_label = Label(second_frame, text="What is the customer name: ")
+get_customer_name_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
+get_customer_name_entry = Entry(second_frame)
+get_customer_name_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+row_level += 1
+
+# get Program Name
+get_program_name_label = Label(second_frame, text="What is the program name: ")
+get_program_name_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
+get_program_name_entry = Entry(second_frame)
+get_program_name_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+row_level += 1
+
+# Get \er number
+get_er_number_label = Label(second_frame, text="What is the ER number: ")
+get_er_number_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
+get_er_number_entry = Entry(second_frame)
+get_er_number_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+get_er_number_button = Button(second_frame, text="Validate", command=validate_er_number)
+get_er_number_button.grid(row=row_level, column=2, padx=5, pady=5, sticky=W)
+row_level += 1
+
+# Get sg number
+get_sg_service_label = Label(second_frame, text="What is the SG Service: ")
+get_sg_service_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
+get_sg_service_entry = Entry(second_frame)
+get_sg_service_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+get_sg_service_button = Button(second_frame, text="Validate", command=validate_sg_number)
+get_sg_service_button.grid(row=row_level, column=2, padx=5, pady=5, sticky=W)
+row_level += 1
+
+# get TSB Number
+get_ticket_number_label = Label(second_frame, text="What is the TSB number: ")
+get_ticket_number_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
+get_ticket_number_entry = Entry(second_frame)
+get_ticket_number_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+get_ticket_number_button = Button(second_frame, text="Validate", command=validate_tsb_number)
+get_ticket_number_button.grid(row=row_level, column=2, padx=5, pady=5, sticky=W)
+row_level += 1
+
+
+# Type of connection
+nesg_connection_type_label = Label(second_frame, text="What is the type of connection:")
+nesg_connection_type_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
+nesg_connection_type_entry = Entry(second_frame)
+nesg_connection_type_entry.insert(0, "Internet/ED6/DTS/DTE")
+nesg_connection_type_entry.bind("<FocusIn>", delete_text_connection)
+nesg_connection_type_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+row_level += 1
+
+
+# Get NESG Location
+nesg_connection_location_label = Label(second_frame, text="NESG Location")
+nesg_connection_location_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
+nesg_connection_location_entry = Entry(second_frame)
+nesg_connection_location_entry.insert(0, "ACY/OEX/SLC/ATL")
+nesg_connection_location_entry.bind("<FocusIn>", delete_text_location)
+nesg_connection_location_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+row_level += 1
+
+# FTI Crypto IP
+fti_crypto_ip_label = Label(second_frame, text="What is the FTI Crypto IP: ")
+fti_crypto_ip_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
+fti_crypto_ip_entry = Entry(second_frame)
+fti_crypto_ip_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+row_level += 1
+
+# get end user crypto IP
+end_user_crypto_ip_label = Label(second_frame, text="What is the customers crypto IP? ")
+end_user_crypto_ip_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
+end_user_crypto_ip_entry = Entry(second_frame)
+end_user_crypto_ip_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+end_user_crypto_ip_button = Button(second_frame, text="Validate", command=validate_end_user_crypto_ip)
+end_user_crypto_ip_button.grid(row=row_level, column=2, padx=5, pady=5, sticky=W)
+row_level += 1
+
+# get end user client IP
+end_user_customer_ip_label = Label(second_frame, text="What is the customers client IP? ")
+end_user_customer_ip_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
+end_user_customer_ip_entry = Entry(second_frame)
+end_user_customer_ip_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+row_level += 1
+
+# get end user dst IP
+end_user_dst_ip_label = Label(second_frame, text="What is the customers dst IP? ")
+end_user_dst_ip_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
+end_user_dst_ip_entry = Entry(second_frame)
+end_user_dst_ip_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+row_level += 1
+
+# name of crypto acl
+crypto_acl_label = Label(second_frame, text="What is the name of the crypto ACL? ")
+crypto_acl_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
+crypto_acl_entry = Entry(second_frame)
+crypto_acl_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+row_level += 1
+
+# name of crypto map on the interface
+crypto_map_name_label = Label(second_frame, text="What is the crypto map name? ")
+crypto_map_name_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
+crypto_map_name_entry = Entry(second_frame)
+crypto_map_name_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+row_level += 1
+
+# name of asa interface
+asa_interface_label = Label(second_frame, text="What is the ASA interface name? ")
+asa_interface_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
+asa_interface_entry = Entry(second_frame)
+asa_interface_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+row_level += 1
+
+# next sequence number
+crypto_sequence_number_label = Label(second_frame, text="What is the next sequence number ")
+crypto_sequence_number_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
+crypto_sequence_number_entry = Entry(second_frame)
+crypto_sequence_number_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+crypto_sequence_number_button = Button(second_frame, text="Validate", command=validate_sequence_number)
+crypto_sequence_number_button.grid(row=row_level, column=2, padx=5, pady=5, sticky=W)
+row_level += 1
+
+# get pre shared key
+crypto_psk_label = Label(second_frame, text="What is the PSK? ")
+crypto_psk_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
+crypto_psk_entry = Entry(second_frame)
+crypto_psk_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+crypto_psk_button = Button(second_frame, text="Validate", command=validate_password)
+crypto_psk_button.grid(row=row_level, column=2, padx=5, pady=5, sticky=W)
+row_level += 1
+
+# next hop interface IP
+asa_interface_next_hop_label = Label(second_frame, text="What is the next hop interface IP ")
+asa_interface_next_hop_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
+asa_interface_next_hop_entry = Entry(second_frame)
+asa_interface_next_hop_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+row_level += 1
+
+
+# Buttons to save to file or reset all fields
+validate_button = Button(second_frame, text="Validate", command=validate_for_file)
+validate_button.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
 save_button = Button(second_frame, text="Save", command=save_to_file)
-save_button.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
+save_button.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
 reset_button = Button(second_frame, text="Reset", command=reset_all_fields)
-reset_button.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+reset_button.grid(row=row_level, column=2, padx=5, pady=5, sticky=W)
 
 top_level_window.config(menu=my_menu)
 top_level_window.mainloop()
