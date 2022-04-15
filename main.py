@@ -4,7 +4,7 @@ import ipaddress
 
 # Create the window
 top_level_window = Tk()
-top_level_window.geometry("600x350")
+top_level_window.geometry("600x1000")
 top_level_window.title("Welcome to the on-boarding program")
 row_level = 0
 
@@ -103,7 +103,7 @@ def validate_tsb_number():
 def validate_type_of_connection():
     type_of_connection = nesg_connection_type_entry.get().lower()
     if (type_of_connection == "internet") or (type_of_connection == "ed6") or \
-        (type_of_connection == "dts") or (type_of_connection == "dte"):
+       (type_of_connection == "dts") or (type_of_connection == "dte"):
         nesg_connection_type_entry.configure(bg="white")
     else:
         nesg_connection_type_entry.configure(bg="red")
@@ -119,7 +119,7 @@ def delete_text_connection(event):
 def validate_nesg_location():
     location_of_connection = nesg_connection_location_entry.get().lower()
     if (location_of_connection == "acy") or (location_of_connection == "oex") or \
-        (location_of_connection == "slc") or (location_of_connection == "atl"):
+       (location_of_connection == "slc") or (location_of_connection == "atl"):
         nesg_connection_type_entry.configure(bg="white")
     else:
         nesg_connection_type_entry.configure(bg="red")
@@ -168,17 +168,39 @@ def validate_end_user_crypto_ip():
         end_user_crypto_ip_entry.configure(bg="red")
 
 
-def number_of_client_ips():
-    number_of_ip = end_user_customer_ip_entry.get()
-    if not number_of_ip.isdigit():
-        end_user_customer_ip_entry.configure(bg="red")
-    else:
-        end_user_customer_ip_entry.configure(bg="white")
-        new = Toplevel(second_frame)
-        new.geometry("750x250")
-        new.title("New Window")
+def client_ips():
+    global customer_list_of_ips
+    customer_list_of_ips = []
+    list_of_ip = end_user_customer_ip_entry.get().split(",")
+    number_of_ips = len(list_of_ip)
+
+    for i in range(0, number_of_ips):
+        try:
+            current_ip_in_list = ipaddress.ip_address(list_of_ip[i])
+            customer_list_of_ips.append(current_ip_in_list)
+            end_user_customer_ip_entry.configure(bg="white")
+        except ValueError:
+            end_user_customer_ip_entry.configure(bg="red")
+            end_user_customer_ip_entry.delete(0, END)
+            end_user_customer_ip_entry.insert(0, "IP is incorrect: " + list_of_ip[i])
 
 
+def destination_ips():
+    global destination_list_of_ips
+    destination_list_of_ips = []
+    list_of_ip = end_user_dst_ip_entry.get().split(",")
+    number_of_ips = len(list_of_ip)
+
+    for i in range(0, number_of_ips):
+        try:
+            current_ip_in_list = ipaddress.ip_address(list_of_ip[i])
+            destination_list_of_ips.append(current_ip_in_list)
+            end_user_customer_ip_entry.configure(bg="white")
+            print(destination_list_of_ips)
+        except ValueError:
+            end_user_customer_ip_entry.configure(bg="red")
+            end_user_customer_ip_entry.delete(0, END)
+            end_user_customer_ip_entry.insert(0, "IP is incorrect: " + list_of_ip[i])
 
 
 def validate_crypto_acl_name():
@@ -214,8 +236,8 @@ def validate_password():
             special_case_count += 1
 
     if (password_length <= 14) or (lower_case_count <= 1) or \
-        (upper_case_count <= 1) or (digit_case_count <= 1) or \
-        (special_case_count <= 1):
+       (upper_case_count <= 1) or (digit_case_count <= 1) or \
+       (special_case_count <= 1):
         crypto_psk_entry.configure(bg="red")
     else:
         crypto_psk_entry.configure(bg="white")
@@ -223,10 +245,12 @@ def validate_password():
 
 def validate_for_file():
     pass
+    # TODO: finish function for validate all button
 
 
 # Save file
 def save_to_file():
+    # TODO: write for loop for crypto acl and write route statements
     sg_service = "FTIH-SG-"
     er_number = "ER-"
     subnet_mask = "255.255.255.255"
@@ -410,11 +434,11 @@ end_user_crypto_ip_button.grid(row=row_level, column=2, padx=5, pady=5, sticky=W
 row_level += 1
 
 # get end user client IP
-end_user_customer_ip_label = Label(second_frame, text="How many client IP's? ")
+end_user_customer_ip_label = Label(second_frame, text="Enter client IP's: ")
 end_user_customer_ip_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
 end_user_customer_ip_entry = Entry(second_frame)
 end_user_customer_ip_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
-end_user_customer_ip_button = Button(second_frame, text="Enter client IP's", command=number_of_client_ips)
+end_user_customer_ip_button = Button(second_frame, text="Enter client IP's", command=client_ips)
 end_user_customer_ip_button.grid(row=row_level, column=2, padx=5, pady=5, sticky=W)
 row_level += 1
 
@@ -423,6 +447,8 @@ end_user_dst_ip_label = Label(second_frame, text="What is the customers dst IP? 
 end_user_dst_ip_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
 end_user_dst_ip_entry = Entry(second_frame)
 end_user_dst_ip_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+end_user_dst_ip_button = Button(second_frame, text="Enter destination IP's", command=destination_ips)
+end_user_dst_ip_button.grid(row=row_level, column=2, padx=5, pady=5, sticky=W)
 row_level += 1
 
 # name of crypto acl
