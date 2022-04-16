@@ -100,6 +100,23 @@ def validate_tsb_number():
         get_ticket_number_entry.configure(bg="white")
 
 
+def is_nems_flow():
+    answer = get_nems_flow_entry.get().lower()
+    if answer == "yes" or answer == "no":
+        get_nems_flow_entry.configure(bg="white")
+    else:
+        get_nems_flow_entry.configure(bg="red")
+
+
+def delete_nems_answer(event):
+    answer = get_nems_flow_entry.get().lower()
+    try:
+        if answer == "yes/no":
+            get_nems_flow_entry.delete(0, END)
+    except ValueError:
+        pass
+
+
 def validate_type_of_connection():
     type_of_connection = nesg_connection_type_entry.get().lower()
     if (type_of_connection == "internet") or (type_of_connection == "ed6") or \
@@ -110,24 +127,30 @@ def validate_type_of_connection():
 
 
 def delete_text_connection(event):
+    answer = nesg_connection_type_entry.get()
     try:
-        nesg_connection_type_entry.delete(0, END)
+        if answer == "Internet/ED6/DTS/DTE":
+            nesg_connection_type_entry.delete(0, END)
     except ValueError:
         pass
 
 
 def validate_nesg_location():
+    global nesg_location_for_save
     location_of_connection = nesg_connection_location_entry.get().lower()
     if (location_of_connection == "acy") or (location_of_connection == "oex") or \
        (location_of_connection == "slc") or (location_of_connection == "atl"):
         nesg_connection_type_entry.configure(bg="white")
+        nesg_location_for_save = nesg_connection_location_entry.get().lower()
     else:
         nesg_connection_type_entry.configure(bg="red")
 
 
 def delete_text_location(event):
+    answer = nesg_connection_location_entry.get()
     try:
-        nesg_connection_location_entry.delete(0, END)
+        if answer == "ACY/OEX/SLC/ATL":
+            nesg_connection_location_entry.delete(0, END)
     except ValueError:
         pass
 
@@ -136,11 +159,9 @@ def validate_fti_crypto_ip():
     global interface_name_index
     global interface_next_hop_index
     global interface_crypto_map_index
-    global nesg_location_for_save
 
     nesg_location = nesg_connection_location_entry.get().lower()
     nesg_crypto_ip = fti_crypto_ip_entry.get()
-    nesg_location_for_save = fti_crypto_ip_entry.get()
 
     if nesg_location == 'acy':
         if nesg_crypto_ip not in acy_interfaces:
@@ -170,37 +191,40 @@ def validate_end_user_crypto_ip():
 
 def client_ips():
     global customer_list_of_ips
+    global client_number_of_ips
     customer_list_of_ips = []
-    list_of_ip = end_user_customer_ip_entry.get().split(",")
-    number_of_ips = len(list_of_ip)
+    list_of_ips = end_user_customer_ip_entry.get().split(",")
+    client_number_of_ips = len(list_of_ips)
 
-    for i in range(0, number_of_ips):
+    for i in range(0, client_number_of_ips):
         try:
-            current_ip_in_list = ipaddress.ip_address(list_of_ip[i])
+            ipaddress.ip_address(list_of_ips[i])
+            current_ip_in_list = list_of_ips[i]
             customer_list_of_ips.append(current_ip_in_list)
             end_user_customer_ip_entry.configure(bg="white")
         except ValueError:
             end_user_customer_ip_entry.configure(bg="red")
             end_user_customer_ip_entry.delete(0, END)
-            end_user_customer_ip_entry.insert(0, "IP is incorrect: " + list_of_ip[i])
+            end_user_customer_ip_entry.insert(0, "IP is incorrect: " + list_of_ips[i])
 
 
 def destination_ips():
     global destination_list_of_ips
+    global dst_number_of_ips
     destination_list_of_ips = []
-    list_of_ip = end_user_dst_ip_entry.get().split(",")
-    number_of_ips = len(list_of_ip)
+    list_of_ips = end_user_dst_ip_entry.get().split(",")
+    dst_number_of_ips = len(list_of_ips)
 
-    for i in range(0, number_of_ips):
+    for i in range(0, dst_number_of_ips):
         try:
-            current_ip_in_list = ipaddress.ip_address(list_of_ip[i])
+            ipaddress.ip_address(list_of_ips[i])
+            current_ip_in_list = list_of_ips[i]
             destination_list_of_ips.append(current_ip_in_list)
             end_user_customer_ip_entry.configure(bg="white")
-            print(destination_list_of_ips)
         except ValueError:
             end_user_customer_ip_entry.configure(bg="red")
             end_user_customer_ip_entry.delete(0, END)
-            end_user_customer_ip_entry.insert(0, "IP is incorrect: " + list_of_ip[i])
+            end_user_customer_ip_entry.insert(0, "IP is incorrect: " + list_of_ips[i])
 
 
 def validate_crypto_acl_name():
@@ -211,7 +235,7 @@ def validate_crypto_acl_name():
 
 
 def validate_sequence_number():
-    if len(get_sg_service_entry.get()) != 3 or (not get_sg_service_entry.get().isdigit()):
+    if len(get_sg_service_entry.get()) > 3 and not (get_sg_service_entry.get().isdigit()):
         crypto_sequence_number_entry.configure(bg="red")
     else:
         crypto_sequence_number_entry.configure(bg="white")
@@ -250,7 +274,6 @@ def validate_for_file():
 
 # Save file
 def save_to_file():
-    # TODO: write for loop for crypto acl and write route statements
     sg_service = "FTIH-SG-"
     er_number = "ER-"
     subnet_mask = "255.255.255.255"
@@ -273,7 +296,10 @@ def save_to_file():
     on_boarding_file.write("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-" + "\n")
     on_boarding_file.write("Below is the commands that you can copy and paste into the ASA" + "\n")
     on_boarding_file.write("\n")
-    on_boarding_file.write("access-list" + " " + crypto_acl_entry.get() + " " + "extended permit ip host " + end_user_customer_ip_entry.get() + " host " + end_user_dst_ip_entry.get() + "\n")
+
+    for i in range(0, client_number_of_ips):
+        for j in range(0, dst_number_of_ips):
+            on_boarding_file.write("access-list" + " " + crypto_acl_entry.get() + " " + "extended permit ip host " + customer_list_of_ips[i] + " host " + destination_list_of_ips[j] + "\n")
     on_boarding_file.write("\n")
 
     if nesg_location_for_save == 'acy':
@@ -296,9 +322,18 @@ def save_to_file():
     on_boarding_file.write("   ikev2 remote-authentication pre-shared-key " + crypto_psk_entry.get() + "\n")
     on_boarding_file.write("   ikev2 local-authentication pre-shared-key " + crypto_psk_entry.get() + "\n")
     on_boarding_file.write("\n")
-#    on_boarding_file.write("route " + asa_interface_entry.get() + " " + end_user_crypto_ip_entry.get() + " " + subnet_mask + " " + asa_interface_next_hop_entry.get() + "\n")
-#    on_boarding_file.write("route " + asa_interface_entry.get() + " " + end_user_customer_ip_entry.get() + " " + subnet_mask + " " + asa_interface_next_hop_entry.get() + "\n")
+    if nesg_location_for_save == 'acy':
+        on_boarding_file.write("route " + acy_interfaces[interface_name_index] + " " + end_user_crypto_ip_entry.get() + " " + subnet_mask + " " + acy_interfaces[interface_next_hop_index] + "\n")
+        for i in range(0, client_number_of_ips):
+            on_boarding_file.write("route " + acy_interfaces[interface_name_index] + " " + customer_list_of_ips[i] + " " + subnet_mask + " " + acy_interfaces[interface_next_hop_index] + "\n")
     on_boarding_file.write("\n")
+
+    if get_nems_flow_entry.get() == "yes":
+        on_boarding_file.write("object-group network NEMS-Client" + "\n")
+        for i in range(0, client_number_of_ips):
+            on_boarding_file.write("   network-object object " + customer_list_of_ips[i] + "\n")
+
+
     # Close opend file
     on_boarding_file.close()
 
@@ -393,6 +428,19 @@ get_ticket_number_button = Button(second_frame, text="Validate", command=validat
 get_ticket_number_button.grid(row=row_level, column=2, padx=5, pady=5, sticky=W)
 row_level += 1
 
+
+# is NEMS Flow
+get_nems_flow_label = Label(second_frame, text="Is this a NEMS flow? ")
+get_nems_flow_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
+get_nems_flow_entry = Entry(second_frame)
+get_nems_flow_entry.insert(0, "yes/no")
+get_nems_flow_entry.bind("<FocusIn>", delete_nems_answer)
+get_nems_flow_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+get_nems_flow_button = Button(second_frame, text="Validate", command=is_nems_flow)
+get_nems_flow_button.grid(row=row_level, column=2, padx=5, pady=5, sticky=W)
+row_level += 1
+
+
 # Type of connection
 nesg_connection_type_label = Label(second_frame, text="What is the type of connection:")
 nesg_connection_type_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
@@ -438,7 +486,7 @@ end_user_customer_ip_label = Label(second_frame, text="Enter client IP's: ")
 end_user_customer_ip_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
 end_user_customer_ip_entry = Entry(second_frame)
 end_user_customer_ip_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
-end_user_customer_ip_button = Button(second_frame, text="Enter client IP's", command=client_ips)
+end_user_customer_ip_button = Button(second_frame, text="Validate", command=client_ips)
 end_user_customer_ip_button.grid(row=row_level, column=2, padx=5, pady=5, sticky=W)
 row_level += 1
 
@@ -447,7 +495,7 @@ end_user_dst_ip_label = Label(second_frame, text="What is the customers dst IP? 
 end_user_dst_ip_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
 end_user_dst_ip_entry = Entry(second_frame)
 end_user_dst_ip_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
-end_user_dst_ip_button = Button(second_frame, text="Enter destination IP's", command=destination_ips)
+end_user_dst_ip_button = Button(second_frame, text="Validate", command=destination_ips)
 end_user_dst_ip_button.grid(row=row_level, column=2, padx=5, pady=5, sticky=W)
 row_level += 1
 
