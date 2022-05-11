@@ -441,7 +441,6 @@ end_user_crypto_ip_button = Button(top_level_window, text="Validate", command=va
 end_user_crypto_ip_button.grid(row=row_level, column=2, padx=5, pady=5, sticky=W)
 row_level += 1
 
-
 # get end user client IP
 end_user_customer_ip_label = Label(top_level_window, text="Enter client IP's: ")
 end_user_customer_ip_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
