@@ -10,7 +10,7 @@ top_level_window.title("Welcome to the on-boarding program")
 # Variable to dynamically assign rows
 row_level = 0
 
-# Read from the config file
+# Read the config file
 config_file = configparser.RawConfigParser()
 config_file.read('config.txt')
 details_dict = dict(config_file.items('MY_VARIABLES'))
@@ -107,6 +107,13 @@ def validate_nesg_location():
     nesg_location_for_save = show_nesg_connection_location.current()
 
 
+def validate_tunnel_number():
+    if len(get_sg_service_entry.get()) > 3 and not (get_sg_service_entry.get().isdigit()):
+        crypto_sequence_number_entry.configure(bg="red")
+    else:
+        crypto_sequence_number_entry.configure(bg="white")
+
+
 def validate_fti_crypto_ip():
     global interface_name_index
     global interface_next_hop_index
@@ -184,13 +191,6 @@ def validate_crypto_acl_name():
         crypto_acl_entry.configure(bg="red")
     else:
         crypto_acl_entry.configure(bg="white")
-
-
-def validate_sequence_number():
-    if len(get_sg_service_entry.get()) > 3 and not (get_sg_service_entry.get().isdigit()):
-        crypto_sequence_number_entry.configure(bg="red")
-    else:
-        crypto_sequence_number_entry.configure(bg="white")
 
 
 def validate_password():
@@ -414,6 +414,15 @@ nesg_connection_location_button = Button(top_level_window, text="Validate", comm
 nesg_connection_location_button.grid(row=row_level, column=2, padx=5, pady=5, sticky=W)
 row_level += 1
 
+# next tunnel number
+crypto_sequence_number_label = Label(top_level_window, text="What is the next tunnel number ")
+crypto_sequence_number_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
+crypto_sequence_number_entry = Entry(top_level_window)
+crypto_sequence_number_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
+crypto_sequence_number_button = Button(top_level_window, text="Validate", command=validate_tunnel_number)
+crypto_sequence_number_button.grid(row=row_level, column=2, padx=5, pady=5, sticky=W)
+row_level += 1
+
 # FTI Crypto IP
 fti_crypto_ip_label = Label(top_level_window, text="What is the FTI Crypto IP: ")
 fti_crypto_ip_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
@@ -431,6 +440,7 @@ end_user_crypto_ip_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
 end_user_crypto_ip_button = Button(top_level_window, text="Validate", command=validate_end_user_crypto_ip)
 end_user_crypto_ip_button.grid(row=row_level, column=2, padx=5, pady=5, sticky=W)
 row_level += 1
+
 
 # get end user client IP
 end_user_customer_ip_label = Label(top_level_window, text="Enter client IP's: ")
@@ -457,15 +467,6 @@ crypto_acl_entry = Entry(top_level_window)
 crypto_acl_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
 crypto_acl_button = Button(top_level_window, text="Validate", command=validate_crypto_acl_name)
 crypto_acl_button.grid(row=row_level, column=2, padx=5, pady=5, sticky=W)
-row_level += 1
-
-# next sequence number
-crypto_sequence_number_label = Label(top_level_window, text="What is the next sequence number ")
-crypto_sequence_number_label.grid(row=row_level, column=0, padx=5, pady=5, sticky=W)
-crypto_sequence_number_entry = Entry(top_level_window)
-crypto_sequence_number_entry.grid(row=row_level, column=1, padx=5, pady=5, sticky=W)
-crypto_sequence_number_button = Button(top_level_window, text="Validate", command=validate_sequence_number)
-crypto_sequence_number_button.grid(row=row_level, column=2, padx=5, pady=5, sticky=W)
 row_level += 1
 
 # get pre shared key
