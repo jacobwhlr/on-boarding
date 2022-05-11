@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 import ipaddress
+import configparser
 
 # Create the window
 top_level_window = Tk()
@@ -19,6 +20,13 @@ my_canvas.configure(yscrollcommand=my_scrollbar.set)
 my_canvas.bind('<Configure>', lambda e: my_canvas.configure(scrollregion=my_canvas.bbox("all")))
 second_frame = Frame(my_canvas)
 my_canvas.create_window((0, 0), window=second_frame, anchor="nw")
+
+# Read from the config file
+config_file = configparser.RawConfigParser()
+config_file.read('config.txt')
+details_dict = dict(config_file.items('MY_VARIABLES'))
+author_name = details_dict['author']
+version_number = details_dict['version']
 
 """
 Global Variables
@@ -46,8 +54,6 @@ def about_new_window():
     new_window.geometry("200x200")
 
     # A Label widget to show in toplevel
-    author_name = "Jacob"
-    version_number = "1.0"
     Label(new_window, text=f"Author: {author_name}").grid(row=0, column=0, sticky="W")
     Label(new_window, text=f"Version: {version_number}").grid(row=1, column=0, sticky="W")
 
